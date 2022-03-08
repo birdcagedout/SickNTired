@@ -38,6 +38,7 @@ class Vision:
         # First we need to create the list of [x, y, w, h] rectangles
         rectangles = []
         for loc in locations:
+            
             rect = [int(loc[0]), int(loc[1]), self.needle_w, self.needle_h]
             # Add every box to the list twice in order to retain single (non-overlapping) boxes
             rectangles.append(rect)

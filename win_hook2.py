@@ -31,8 +31,8 @@ def run():
 	def callback(hWinEventHook, event, hwnd, idObject, idChild, dwEventThread, dwmsEventTIme):
 		title = win32gui.GetWindowText(hwnd)
 
-		if title != "":
-			logger.info(f"[{title}]")
+		#if title != "":
+		#	logger.info(f"[{title}]")
 
 		# Force to exit application
 		#target_words = ["저공해", "계산기"]
@@ -62,9 +62,9 @@ def run():
 	# List events to catch
 	events = [win32con.EVENT_SYSTEM_FOREGROUND, win32con.EVENT_OBJECT_FOCUS, win32con.WM_MOVE, win32con.WM_SIZE]
 	hooks = [set_eventhook(WinEventProc, event) for event in events]
-	if not any(hooks):
-		logger.info('SetWinEventHook failed')
-		sys.exit(1)
+	#if not any(hooks):
+	#	logger.info('SetWinEventHook failed')
+	#	sys.exit(1)
 
 	msg = ctypes.wintypes.MSG()
 	while user32.GetMessageW(ctypes.byref(msg), 0, 0, 0) > 0:
