@@ -24,9 +24,10 @@ BG_COLOR = 	'#dae5f7'	# '#D7ccf5'= 연한보라
 REGION = (0, 0, 0, 0)
 
 ACTIVATED = False
+THREAD_EXPIRED = False
 
 HOME_PATH = os.path.dirname(__file__)
-VER = "2.1"
+VER = "2.5"
 
 
 
@@ -97,7 +98,6 @@ class Bypass:
 		self.target_win_title = None
 		
 		self.get_target_win()
-		self.get_search_region()
 		
 		self.stalker = WinStalkerThread(self.target_win_hwnd)
 		self.stalker.start()
@@ -113,39 +113,6 @@ class Bypass:
 					self.target_win_hwnd = hwnd
 					self.target_win_title = title
 		win32gui.EnumWindows(winEnumHandler, None)
-
-	# 자동자관리정보시스템 창 크기의 30~50% 범위에서 찾음
-	def get_search_region(self):
-		# 윈도 크기 정보 얻기
-		win_rect = win32gui.GetWindowRect(self.target_win_hwnd)
-		win_width = win_rect[2] - win_rect[0]		#     0      1    2    3
-		win_height = win_rect[3] - win_rect[1]		# (X시작, Y시작, X끝, Y끝)
-
-		# 화면보다 크면 ==> 축소
-		if win_width >= SCREEN_WIDTH:
-			win32gui.MoveWindow(self.target_win_hwnd, win_rect[0], win_rect[1], win_rect[0] + SCREEN_WIDTH, win_rect[3], True)
-		if win_height >= SCREEN_HEIGHT:
-			win32gui.MoveWindow(self.target_win_hwnd, win_rect[0], win_rect[1], win_rect[2], win_rect[1] + SCREEN_HEIGHT, True)
-
-		# 화면 벗어나면 ==> 이동
-		if win_rect[0] < 0:					# X축 왼쪽
-			win32gui.MoveWindow(self.target_win_hwnd, 0, win_rect[1], (win_rect[2] - win_rect[0]), win_rect[3], True)
-		if win_rect[2] > SCREEN_WIDTH:		# X축 오른쪽
-			win32gui.MoveWindow(self.target_win_hwnd, win_rect[0] - (win_rect[2] - SCREEN_WIDTH), win_rect[1], win_rect[2] - (win_rect[2] - SCREEN_WIDTH), win_rect[3], True)
-		
-		# 윈도 크기 정보 update
-		win_rect = win32gui.GetWindowRect(self.target_win_hwnd)
-		win_width = win_rect[2] - win_rect[0]		#     0      1    2    3
-		win_height = win_rect[3] - win_rect[1]		# (X시작, Y시작, X끝, Y끝)
-		offset_x = win_rect[0]
-		offset_y = win_rect[1]
-
-		start_x = offset_x + int(0.3*win_width)
-		start_y = offset_y + int(0.3*win_height)
-
-		# 이미지 검색할 지역 설정
-		global REGION
-		REGION = (start_x, start_y, int(0.5*win_width), int(0.5*win_height))
 
 	
 	# 라디오버튼 클릭
@@ -251,6 +218,10 @@ class Bypass:
 			if ACTIVATED == True:
 				ACTIVATED = False
 
+				# 쓰레드 죽이고 다시 살림
+				global THREAD_EXPIRED
+				THREAD_EXPIRED = True
+
 				# 창 맨 위로
 				self.root.wm_attributes("-topmost", True)
 				self.root.update()
@@ -263,9 +234,13 @@ class Bypass:
 					j += 1
 					time.sleep(0.02)
 				
-				# 쓰레드 죽이고 다시 살림
-				del self.watcher
-				time.sleep(1)
+				
+				#del self.watcher
+				self.watcher.join()
+				#print("join 후 쓰레드 종료됨")
+				#self.canvas.itemconfigure(image_on_canvas, image=smile_frame)
+				#self.canvas.update()
+				#time.sleep(1)
 				self.watcher = WatcherThread(reason=self.reason)
 				self.watcher.start()
 			
@@ -281,6 +256,8 @@ class WinStalkerThread(Thread):
 		logging.basicConfig(format="[%(asctime)s]{%(filename)s:%(lineno)d}-%(levelname)s - %(message)s")
 		self.logger = logging.getLogger("My Logger")
 		self.logger.setLevel(logging.INFO)
+
+		self.get_search_region()
 	
 	# 자동자관리정보시스템 창 크기의 30~60% 범위에서 찾음
 	def get_search_region(self):
@@ -293,15 +270,20 @@ class WinStalkerThread(Thread):
 
 		# 화면보다 크면 ==> 축소
 		if win_width > SCREEN_WIDTH:
-			win32gui.MoveWindow(self.hwnd, win_rect[0], win_rect[1], win_rect[0] + SCREEN_WIDTH, win_rect[3], True)
+			win32gui.MoveWindow(self.hwnd, win_rect[0], win_rect[1], SCREEN_WIDTH, win_height, True)
 		if win_height > SCREEN_HEIGHT:
-			win32gui.MoveWindow(self.hwnd, win_rect[0], win_rect[1], win_rect[2], win_rect[1] + SCREEN_HEIGHT, True)
+			win32gui.MoveWindow(self.hwnd, win_rect[0], win_rect[1], win_width, SCREEN_HEIGHT, True)
 
+		# 윈도 크기 정보 얻기
+		win_rect = win32gui.GetWindowRect(self.hwnd)
+		win_width = win_rect[2] - win_rect[0]		#     0      1    2    3
+		win_height = win_rect[3] - win_rect[1]		# (X시작, Y시작, X끝, Y끝)
+		
 		# 화면 벗어나면 ==> 이동
 		if win_rect[0] < 0:					# X축 왼쪽
-			win32gui.MoveWindow(self.hwnd, 0, win_rect[1], (win_rect[2] - win_rect[0]), win_rect[3], True)
+			win32gui.MoveWindow(self.hwnd, 0, win_rect[1], win_width, win_height, True)
 		if win_rect[2] > SCREEN_WIDTH:		# X축 오른쪽
-			win32gui.MoveWindow(self.hwnd, win_rect[0] - (win_rect[2] - SCREEN_WIDTH), win_rect[1], win_rect[2] - (win_rect[2] - SCREEN_WIDTH), win_rect[3], True)
+			win32gui.MoveWindow(self.hwnd, win_rect[0] - (win_rect[2] - SCREEN_WIDTH), win_rect[1], win_width, win_height, True)
 		
 		# 윈도 크기 정보 update
 		win_rect = win32gui.GetWindowRect(self.hwnd)
@@ -313,12 +295,9 @@ class WinStalkerThread(Thread):
 		start_x = offset_x + int(0.3*win_width)
 		start_y = offset_y + int(0.3*win_height)
 
-		start_x = offset_x + int(0.3*win_width)
-		start_y = offset_y + int(0.3*win_height)
-
 		# 이미지 검색할 지역 설정
 		global REGION
-		REGION = (start_x, start_y, int(0.6*win_width), int(0.5*win_height))
+		REGION = (start_x, start_y, int(0.2*win_width), int(0.2*win_height))
 		print(REGION)
 
 		
@@ -342,7 +321,6 @@ class WinStalkerThread(Thread):
 		# Define callback function
 		def callback(hWinEventHook, event, hwnd, idObject, idChild, dwEventThread, dwmsEventTIme):
 			#title = win32gui.GetWindowText(hwnd)
-
 			#if title != "":
 			#	logger.info(f"[{title}]")
 
@@ -352,11 +330,15 @@ class WinStalkerThread(Thread):
 			#	if word in title:
 			#		win32gui.SendMessage(hwnd, win32con.WM_CLOSE, 0, 0)
 
+			# MAXIMIZE 이벤트 제어법 : https://stackoverflow.com/questions/17436795/setwineventhook-window-maximized-event
+			# win32gui.GetWindowPlacement
+			# http://timgolden.me.uk/pywin32-docs/win32gui__GetWindowPlacement_meth.html
+			# 
 			if self.hwnd == hwnd:
-				self.get_search_region()
-
-			#print(hwnd)
-					
+				posInfo = win32gui.GetWindowPlacement(self.hwnd)		# 현재 윈도의 상태. 2번째[1] 요소가 showCmd
+				if (posInfo[1] == win32con.SW_SHOWNORMAL) or (posInfo[1] == win32con.SW_SHOWMAXIMIZED) or (posInfo[1] == win32con.SW_RESTORE) or (posInfo[1] == win32con.SW_SHOWDEFAULT):
+					print(posInfo[1])
+					self.get_search_region()
 
 		# Set eventhook
 		def set_eventhook(WinEventProc, eventType):
@@ -373,7 +355,7 @@ class WinStalkerThread(Thread):
 		user32.SetWinEventHook.restype = ctypes.wintypes.HANDLE
 
 		# List events to catch
-		events = [win32con.EVENT_SYSTEM_FOREGROUND , win32con.EVENT_SYSTEM_MOVESIZEEND]
+		events = [win32con.EVENT_SYSTEM_FOREGROUND , win32con.EVENT_SYSTEM_MOVESIZEEND, win32con.EVENT_OBJECT_LOCATIONCHANGE]
 		hooks = [set_eventhook(WinEventProc, event) for event in events]
 		#if not any(hooks):
 		#	logger.info('SetWinEventHook failed')
@@ -402,6 +384,13 @@ class WatcherThread(Thread):
 	def run(self):
 		
 		while True:
+
+			# REGION 디버그용
+			#time.sleep(5)
+			#pyscreeze.showRegionOnScreen(REGION)
+			#print(REGION)
+			#exit()
+
 			# 둘 다 뜨는지 먼저 체크
 			try:
 				pos1 = locateCenterOnScreen(os.path.join(HOME_PATH,"inquiry_popup.PNG"), grayscale=True, region=REGION)
@@ -417,6 +406,8 @@ class WatcherThread(Thread):
 			# 작동중 ==> 메인 클래스에 알림 
 			global ACTIVATED
 			ACTIVATED = True
+
+			#pyscreeze.showRegionOnScreen(REGION)
 			
 			# 조회 사유 자동입력
 			pos2 = Point(x=pos1.x+410, y=pos1.y+40)
@@ -442,7 +433,13 @@ class WatcherThread(Thread):
 			
 			# 2초 쉬기
 			#print("")
-			time.sleep(2)
+			time.sleep(1)
+
+			global THREAD_EXPIRED
+			if THREAD_EXPIRED == True:
+				THREAD_EXPIRED = False
+				break
+
 
 
 if __name__ == "__main__":
