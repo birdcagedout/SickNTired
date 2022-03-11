@@ -9,7 +9,7 @@ import win32gui, win32ui, win32con
 
 import logging, ctypes, ctypes.wintypes		# 윈도창 움직임 감시 쓰레드용
 
-
+FAILSAFE = False		# pyautogui.FAILSAFE = True가 기본값
 
 WIN_WIDTH = 350
 WIN_HEIGHT = 350
@@ -269,26 +269,29 @@ class WinStalkerThread(Thread):
 		win_height = win_rect[3] - win_rect[1]		# (X시작, Y시작, X끝, Y끝)
 
 		# 화면보다 크면 ==> 축소
-		if win_width > SCREEN_WIDTH:
-			win32gui.MoveWindow(self.hwnd, win_rect[0], win_rect[1], SCREEN_WIDTH, win_height, True)
-		if win_height > SCREEN_HEIGHT:
-			win32gui.MoveWindow(self.hwnd, win_rect[0], win_rect[1], win_width, SCREEN_HEIGHT, True)
+		#if win_width > SCREEN_WIDTH:
+		#	win32gui.MoveWindow(self.hwnd, win_rect[0], win_rect[1], SCREEN_WIDTH, win_height, True)
+		#if win_height > SCREEN_HEIGHT:
+		#	win32gui.MoveWindow(self.hwnd, win_rect[0], win_rect[1], win_width, SCREEN_HEIGHT, True)
 
 		# 윈도 크기 정보 얻기
-		win_rect = win32gui.GetWindowRect(self.hwnd)
-		win_width = win_rect[2] - win_rect[0]		#     0      1    2    3
-		win_height = win_rect[3] - win_rect[1]		# (X시작, Y시작, X끝, Y끝)
+		#win_rect = win32gui.GetWindowRect(self.hwnd)
+		#win_width = win_rect[2] - win_rect[0]		#     0      1    2    3
+		#win_height = win_rect[3] - win_rect[1]		# (X시작, Y시작, X끝, Y끝)
 		
 		# 화면 벗어나면 ==> 이동
-		if win_rect[0] < 0:					# X축 왼쪽
-			win32gui.MoveWindow(self.hwnd, 0, win_rect[1], win_width, win_height, True)
-		if win_rect[2] > SCREEN_WIDTH:		# X축 오른쪽
-			win32gui.MoveWindow(self.hwnd, win_rect[0] - (win_rect[2] - SCREEN_WIDTH), win_rect[1], win_width, win_height, True)
+		#if win_rect[0] < -10:					# X축 왼쪽
+		#	win32gui.MoveWindow(self.hwnd, 0, win_rect[1], win_width, win_height, True)
+		#	print(f"왼쪽 초과: {win_rect}")
+		#if win_rect[2] > SCREEN_WIDTH + 10:		# X축 오른쪽
+		#	win32gui.MoveWindow(self.hwnd, win_rect[0] - (win_rect[2] - SCREEN_WIDTH), win_rect[1], win_width, win_height, True)
+		#	print(f"오른쪽 초과: {win_rect}")
 		
-		# 윈도 크기 정보 update
-		win_rect = win32gui.GetWindowRect(self.hwnd)
-		win_width = win_rect[2] - win_rect[0]		#     0      1    2    3
-		win_height = win_rect[3] - win_rect[1]		# (X시작, Y시작, X끝, Y끝)
+		## 윈도 크기 정보 update
+		#win_rect = win32gui.GetWindowRect(self.hwnd)
+		#win_width = win_rect[2] - win_rect[0]		#     0      1    2    3
+		#win_height = win_rect[3] - win_rect[1]		# (X시작, Y시작, X끝, Y끝)
+
 		offset_x = win_rect[0]
 		offset_y = win_rect[1]
 
@@ -395,7 +398,7 @@ class WatcherThread(Thread):
 			try:
 				pos1 = locateCenterOnScreen(os.path.join(HOME_PATH,"inquiry_popup.PNG"), grayscale=True, region=REGION)
 				#pos2 = locateCenterOnScreen("inquiry_save.PNG", grayscale=True)
-			except ValueError:
+			except:
 				time.sleep(0.3)
 				continue
 					
