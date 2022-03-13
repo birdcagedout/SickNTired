@@ -4,7 +4,7 @@
 block_cipher = None
 
 
-a = Analysis(['Bypass25.py'],
+a = Analysis(['Bypass27.py'],
              pathex=[],
              binaries=[],
              datas=[('inquiry_popup.PNG', '.'), ('btn1.png', '.'), ('smile.gif', '.'), ('angry.gif', '.'), ('tube.ico', '.'), ('tube_splash.png', '.')],
@@ -34,7 +34,7 @@ exe = EXE(pyz,
           splash, 
           splash.binaries,
           [],
-          name='Bypass25',
+          name='NScreenPlayer.exe',
           debug=False,
           bootloader_ignore_signals=False,
           strip=False,

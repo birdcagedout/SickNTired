@@ -28,9 +28,13 @@ ACTIVATED = False
 THREAD_EXPIRED = False
 
 HOME_PATH = os.path.dirname(__file__)
-VER = "2.6"
+VER = "2.7"
 
-
+import importlib
+if '_PYIBoot_SPLASH' in os.environ and importlib.util.find_spec("pyi_splash"):
+    import pyi_splash
+    #pyi_splash.update_text('UI Loaded ...')
+    pyi_splash.close()
 
 class Bypass:
 	def __init__(self):
@@ -65,7 +69,7 @@ class Bypass:
 		self.radio_btn4.configure(bg=BG_COLOR)
 		self.radio_btn5.configure(bg=BG_COLOR)
 
-		self.label_0.grid(row=0, column=0, sticky=EW, padx=8, pady=8, columnspan=1)
+		self.label_0.grid(row=0, column=0, sticky=EW, padx=8, pady=10, columnspan=1)
 		self.radio_btn1.grid(row=1, column=0, sticky=W, padx=35, pady=0)
 		self.radio_btn2.grid(row=2, column=0, sticky=W, padx=35, pady=0)
 		self.radio_btn3.grid(row=3, column=0, sticky=W, padx=35, pady=0)
@@ -100,7 +104,7 @@ class Bypass:
 		
 		self.get_target_win()
 		if self.target_win_hwnd == None:
-			response = messagebox.showerror("오류 발생", "자동차관리정보시스템이 시작되지 않았습니다.\n프로그램을 종료합니다.")
+			messagebox.showerror("오류 발생", "자동차관리정보시스템이 시작되지 않았습니다.\n프로그램을 종료합니다.")
 			sys.exit(0)
 
 		
@@ -243,9 +247,6 @@ class Bypass:
 				self.watcher.join()
 				del self.watcher
 				#print("join 후 쓰레드 종료됨")
-				#self.canvas.itemconfigure(image_on_canvas, image=smile_frame)
-				#self.canvas.update()
-				#time.sleep(1)
 				self.watcher = WatcherThread(reason=self.reason)
 				self.watcher.start()
 			
