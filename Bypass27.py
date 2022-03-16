@@ -345,9 +345,12 @@ class WinStalkerThread(Thread):
 			# 
 			if self.hwnd == hwnd:
 				posInfo = win32gui.GetWindowPlacement(self.hwnd)		# 현재 윈도의 상태. 2번째[1] 요소가 showCmd
-				if (posInfo[1] == win32con.SW_SHOWNORMAL) or (posInfo[1] == win32con.SW_SHOWMAXIMIZED) or (posInfo[1] == win32con.SW_RESTORE) or (posInfo[1] == win32con.SW_SHOWDEFAULT):
-					print(posInfo[1])
-					self.get_search_region()
+				#if (posInfo[1] == win32con.SW_SHOWNORMAL) or (posInfo[1] == win32con.SW_SHOWMAXIMIZED) or (posInfo[1] == win32con.SW_RESTORE) or (posInfo[1] == win32con.SW_SHOWDEFAULT):
+				#	print(posInfo[1])
+				#	self.get_search_region()
+				print(posInfo[1])
+				self.get_search_region()
+				
 
 		# Set eventhook
 		def set_eventhook(WinEventProc, eventType):
@@ -364,7 +367,7 @@ class WinStalkerThread(Thread):
 		user32.SetWinEventHook.restype = ctypes.wintypes.HANDLE
 
 		# List events to catch
-		events = [win32con.EVENT_SYSTEM_FOREGROUND , win32con.EVENT_SYSTEM_MOVESIZEEND, win32con.EVENT_OBJECT_LOCATIONCHANGE]
+		events = [win32con.EVENT_SYSTEM_FOREGROUND, win32con.EVENT_SYSTEM_MOVESIZEEND]
 		hooks = [set_eventhook(WinEventProc, event) for event in events]
 		#if not any(hooks):
 		#	logger.info('SetWinEventHook failed')
@@ -408,7 +411,7 @@ class WatcherThread(Thread):
 				print(f"locateCenterOnScreen 에러: {e}")
 				time.sleep(0.3)
 				continue
-					
+			
 			if pos1 == None:
 				time.sleep(0.3)
 				continue

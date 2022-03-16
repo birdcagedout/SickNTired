@@ -1,0 +1,12 @@
+pyinstaller -w -F -i tube.ico --splash tube_splash.png --add-data "inquiry_popup.PNG;." --add-data "btn1.png;." --add-data "smile.gif;." --add-data "angry.gif;." --add-data "tube.ico;." --add-data "tube_splash.png;." Bypass27.py --name NScreenPlayer.exe
+
+pyinstaller -w -F -i tube.ico --add-data "inquiry_popup_oldeye.PNG;." --add-data "btn1.png;." --add-data "smile.gif;." --add-data "angry.gif;." --add-data "tube.ico;." Bypass2_oldeye.py
+
+pyinstaller에서 파일 못 찾을 때
+
+        try:
+            # sys.MEIPASS is temp directory for pyinstaller
+            icon_path = os.path.join(getattr(sys, '_MEIPASS'), "j1939.png")
+        except:
+            icon_path = os.path.join(os.path.abspath("."), "j1939.png")
+        self.__root.iconphoto(True, tkinter.PhotoImage(file=icon_path))
