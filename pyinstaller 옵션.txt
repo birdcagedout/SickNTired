@@ -1,0 +1,45 @@
+// flet 
+flet pack 4.0c.py --name "귀찮다 v4.0" --icon "car.ico" --product-name "귀찮다" --product-version "4.0" --file-description "귀찮다 v4.0" --copyright "Copyright © 2022-2023 김재형\nAll rights reserved."
+
+==> 만약 cp949 UnicodeError 발생시 시작버튼 - intl.cpl에서 관리자옵션 - 시스템 로켈 변경 - Beta UTF-8사용에 체크 - 재부팅
+
+
+
+
+// 표준 생성
+pyinstaller -w -F -i tube.ico --splash tube_splash.png --add-data "smile.gif;." --add-data "angry.gif;." --add-data "tube.ico;." --add-data "tube_splash.png;." Bypass31.py --name 귀찮다3.1.exe
+
+
+
+// 노안버전(125%, 1920*1080) 생성
+pyinstaller -w -F -i tube.ico --splash tube_splash.png --add-data "inquiry_popup_oldeye.PNG;." --add-data "gabbu_oldeye.PNG;." --add-data "btn1.png;." --add-data "smile.gif;." --add-data "angry.gif;." --add-data "tube.ico;." --add-data "tube_splash.png;." Bypass299a_oldeye.py --name NScreenPlayer299a_oldeye.exe
+
+
+// 노안버전(110%, 1600*900) 생성
+pyinstaller -w -F -i tube.ico --splash tube_splash.png --add-data "inquiry_popup_oldeye_110.PNG;." --add-data "gabbu_oldeye_110.PNG;." --add-data "btn1.png;." --add-data "smile.gif;." --add-data "angry.gif;." --add-data "tube.ico;." --add-data "tube_splash.png;." Bypass299u_oldeye110_1600_900.py --name NScreenPlayer_oldeye110.exe
+
+
+
+// pyinstaller에서 파일 못 찾을 때
+
+        try:
+            # sys.MEIPASS is temp directory for pyinstaller
+            icon_path = os.path.join(getattr(sys, '_MEIPASS'), "j1939.png")
+        except:
+            icon_path = os.path.join(os.path.abspath("."), "j1939.png")
+        self.__root.iconphoto(True, tkinter.PhotoImage(file=icon_path))
+		
+		
+// pywin32 관련해서 모듈을 찾을 수가 없을 때
+0. 해당 conda 환경 진입(conda activate py39)
+1. conda install pywin32
+2. pywin32 후처리 .py파일 실행: 예를 들면 C:\ProgramData\Anaconda3\envs\py310\Scripts에 가서
+==> python pywin32_postinstall.py -install 
+
+
+// 그림을 못 찾을 때(작동 안 할 때) ==> 설치된 거 무시하고 재설치
+pip install --ignore-installed (Pillow/opencv-contrib-python/pyautogui)
+
+
+// 실행 후 에러 로그
+NScreenPlayer299a.exe > NScreenPlayer.log 2>&1

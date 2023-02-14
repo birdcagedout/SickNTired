@@ -1,0 +1,11 @@
+Fail to allocate bitmap
+Traceback (most recent call last):
+  File "Bypass299b.py", line 393, in run
+  File "pyautogui\__init__.py", line 175, in wrapper
+  File "pyautogui\__init__.py", line 207, in locateCenterOnScreen
+  File "pyscreeze\__init__.py", line 413, in locateCenterOnScreen
+  File "pyscreeze\__init__.py", line 372, in locateOnScreen
+  File "pyscreeze\__init__.py", line 145, in wrapper
+  File "pyscreeze\__init__.py", line 457, in _screenshot_win32
+  File "PIL\ImageGrab.py", line 46, in grab
+OSError: screen grab failed
